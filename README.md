@@ -24,14 +24,23 @@
 - test1 스키마 및 reserve_info 테이블 생성
 - 테이블 명세
 r_no            INT     PK  AutoIncrement
+
 r_user_name     VARCHAR
+
 r_user_password VARCHAR
+
 r_room_no       VARCHAR
+
 r_reserve_date  DATE
+
 r_start_time    VARCHAR
+
 r_end_time      VARCHAR
+
 r_user_yn       VARCHAR
+
 r_regist_date   DATE
+
 
 #### 3.2 빌드/배포
 - 프로젝트 다운로드 후 압축해제
