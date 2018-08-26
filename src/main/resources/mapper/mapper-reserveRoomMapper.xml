@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.mapper.ReserveRoomMapper">
+
+	<insert id="insertReserveRoom">
+		insert into reserve_info 
+		(r_user_name, 
+		 r_user_password, 
+		 r_room_no, 
+		 r_start_time, 
+		 r_end_time, 
+		 r_use_yn, 
+		 r_regist_date, 
+		 r_reserve_date
+		)values
+		<foreach collection="r_date_recur_list" item="item" separator=",">
+		(#{r_user_name}, 
+		 #{r_user_password}, 
+		 #{r_room_no}, 
+		 #{r_start_time}, 
+		 #{r_end_time},
+		 "Y", 
+		 DATE_FORMAT(now(), '%Y%m%d'),
+		 #{item}
+		)
+		</foreach>
+	</insert>
+
+	<select id="selectReserveRoomByDate" resultType="ReserveRoomVO">
+		<![CDATA[
+			select		*
+			from		reserve_info
+			where		r_use_yn = "Y"
+			and			r_reserve_date = #{r_reserve_date}
+			order by 	r_room_no, r_start_time
+		]]>
+	</select>
+
+	<select id="selectReserveRoomDetail" resultType="ReserveRoomVO">
+		<![CDATA[
+			select	*
+			from	reserve_info
+			where	r_use_yn = "Y"
+			and		r_no = #{r_no}
+		]]>
+	</select>
+	
+	<update id="updateReserveRoom">
+		update	reserve_info
+		set		r_room_no = #{r_room_no}, r_start_time = #{r_start_time}, r_end_time = #{r_end_time}, 
+				r_date = #{r_date}, r_repeat_no = #{r_repeat_no}
+		where	r_no = #{r_no}
+	</update>
+	
+	<update id="deleteReserveRoom">
+		update	reserve_info
+		set		r_use_yn = "N"
+		where	r_no = #{r_no}
+	</update>
+
+	<select id="selectReserveByRecurDateList" resultType="ReserveRoomVO" parameterType="java.util.HashMap">
+		<![CDATA[
+			select		*
+			from		reserve_info
+			where		r_room_no = #{r_room_no}
+			and			((r_start_time <= #{r_start_time} and r_end_time > #{r_start_time})
+			or			(r_start_time < #{r_end_time} and r_end_time >= #{r_end_time}))
+			and			r_use_yn = "Y"
+		]]>
+			<choose>
+				<when test="r_date_recur_list.size != 0">
+					and r_reserve_date in
+					<foreach collection="r_date_recur_list" item="item" index="index" separator="," open="(" close=")" >
+						#{item}
+					</foreach>
+				</when>
+			</choose>
+		
+	</select>
+	
+	<select id="selectPasswordCheck" resultType="ReserveRoomVO">
+		<![CDATA[
+			select	*
+			from	reserve_info
+			where	r_no = #{r_no}
+			and		r_user_password = #{r_user_password}
+		]]>
+	</select>
+	
+</mapper>
